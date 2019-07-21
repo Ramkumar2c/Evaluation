@@ -14,7 +14,7 @@ class TaxFactory {
     
     static func getStates() -> [State] {
         states = [stateCA(), stateWA(), stateOR(), stateNV(), stateID(), stateUT(), stateAZ(), stateWY(), stateCO(), stateND()]
-        return states
+        return states.sorted(by:{$0.name < $1.name})
     }
     
     private static func stateCA() -> State {
