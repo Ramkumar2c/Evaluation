@@ -10,8 +10,15 @@ import XCTest
 @testable import Demo
 
 class DemoTests: XCTestCase {
-
+    let formatter = NumberFormatter()
     override func setUp() {
+        let numberOfDecimals = 2
+        formatter.generatesDecimalNumbers = true
+        formatter.maximumFractionDigits = numberOfDecimals
+        formatter.minimumFractionDigits = numberOfDecimals
+        formatter.numberStyle = .decimal
+        formatter.alwaysShowsDecimalSeparator = true
+        formatter.usesGroupingSeparator = false
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
@@ -70,7 +77,7 @@ class DemoTests: XCTestCase {
         let cell =  stateSelectionVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0))
         XCTAssertNotNil(cell)
         XCTAssertEqual(cell?.textLabel?.text, "AZ")
-        XCTAssertEqual(cell?.detailTextLabel?.text, "6.60")
+        XCTAssertEqual(cell?.detailTextLabel?.text, formatter.string(for: 6.60))
         
         XCTAssertNotNil(stateSelectionVC)
         XCTAssertTrue(stateSelectionVC.states.count > 0)
@@ -202,9 +209,9 @@ class DemoTests: XCTestCase {
         let footer = billingVC.tableView.footerView(forSection: 0) as! InvoiceView
         footer.invoice = billingVC.itemViewModel.getInvoice(state: TaxFactory.getStates().first!)
         XCTAssertNotNil(footer)
-        XCTAssertEqual(footer.lblDiscountAmount.text, "0.00")
-        XCTAssertEqual(footer.lblTotalPrice.text, "1.07")
-        XCTAssertEqual(footer.lblTotalWithoutTax.text, "1.00")
+        XCTAssertEqual(footer.lblDiscountAmount.text, formatter.string(for: 0.00))
+        XCTAssertEqual(footer.lblTotalPrice.text, formatter.string(for: 1.07))
+        XCTAssertEqual(footer.lblTotalWithoutTax.text, formatter.string(for: 1.00))
         
         cell.didTapRemove(UIButton())
         XCTAssertEqual(billingVC.itemViewModel.getItems()?.count, 0)
