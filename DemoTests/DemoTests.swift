@@ -69,8 +69,8 @@ class DemoTests: XCTestCase {
         
         let cell =  stateSelectionVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0))
         XCTAssertNotNil(cell)
-        XCTAssertEqual(cell?.textLabel?.text, "CA")
-        XCTAssertEqual(cell?.detailTextLabel?.text, "8.50")
+        XCTAssertEqual(cell?.textLabel?.text, "AZ")
+        XCTAssertEqual(cell?.detailTextLabel?.text, "6.60")
         
         XCTAssertNotNil(stateSelectionVC)
         XCTAssertTrue(stateSelectionVC.states.count > 0)
@@ -115,7 +115,7 @@ class DemoTests: XCTestCase {
         }
         catch {
         }
-        XCTAssertEqual(922250.00, viewModel.getInvoice(state: TaxFactory.getStates().first!)?.totalPrice)
+        XCTAssertEqual(906100.00, viewModel.getInvoice(state: TaxFactory.getStates().first!)?.totalPrice)
     }
     
     func testItemViewModelInvalidInput() {
@@ -130,8 +130,24 @@ class DemoTests: XCTestCase {
         catch {
         }
         
-        viewModel.removeItemAtIndex(index: 0)
-        XCTAssertEqual(viewModel.getItems()?.count, 0)
+        do {
+            try viewModel.removeItemAtIndex(index: 0)
+            XCTAssertEqual(viewModel.getItems()?.count, 0)
+        }
+        catch ItemError.parseError(let message) {
+            XCTAssertNil(message)
+        }
+        catch {
+        }
+        
+        do {
+            try viewModel.removeItemAtIndex(index: 10)
+        }
+        catch ItemError.parseError(let message) {
+            XCTAssertEqual("Invalid index to remove Item",message)
+        }
+        catch {
+        }
         
         // TEST INVALID INPUT
         do {
@@ -187,7 +203,7 @@ class DemoTests: XCTestCase {
         footer.invoice = billingVC.itemViewModel.getInvoice(state: TaxFactory.getStates().first!)
         XCTAssertNotNil(footer)
         XCTAssertEqual(footer.lblDiscountAmount.text, "0.00")
-        XCTAssertEqual(footer.lblTotalPrice.text, "1.08")
+        XCTAssertEqual(footer.lblTotalPrice.text, "1.07")
         XCTAssertEqual(footer.lblTotalWithoutTax.text, "1.00")
         
         cell.didTapRemove(UIButton())

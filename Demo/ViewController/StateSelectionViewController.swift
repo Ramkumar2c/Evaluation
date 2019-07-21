@@ -18,15 +18,20 @@ class StateSelectionViewController: UIViewController {
     var states = TaxFactory.getStates()
     var delegate: StateSelectionDelegate?
     
+    //MARK: ViewController life cycle
+
      override func viewDidLoad() {
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
     }
-
+    
+    //MARK: Custom actions
     @IBAction func didTapCancel(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
 }
+
+//MARK: UITableViewDelegate and UITableViewDataSource
 
 extension StateSelectionViewController: UITableViewDelegate, UITableViewDataSource {
     

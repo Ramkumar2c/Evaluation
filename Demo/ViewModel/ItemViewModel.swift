@@ -41,7 +41,10 @@ class ItemViewModel {
         bill.items.append(item)
      }
     
-    func removeItemAtIndex(index: Int) {
+    func removeItemAtIndex(index: Int) throws {
+        if index >= bill.items.count {
+            throw ItemError.parseError("Invalid index to remove Item")
+        }
         bill.items.remove(at: index)
     }
     

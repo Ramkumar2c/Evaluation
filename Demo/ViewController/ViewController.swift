@@ -6,6 +6,7 @@
 //  Copyright © 2019 Ramkumar Chandrasekaran. All rights reserved.
 //
 import UIKit
+
 class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var txtItem: UITextField!
@@ -17,6 +18,7 @@ class ViewController: UIViewController {
     private let footerIdentifier = "InvoiceFooterId"
     let itemViewModel: ItemViewModel = ItemViewModel()
     
+    //MARK: ViewController life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         txtQuantity.inputAccessoryView = toolBar
@@ -32,6 +34,7 @@ class ViewController: UIViewController {
         }
     }
     
+    //MARK: Custom actions
     @IBAction func didTapAdd(_ sender: UIButton) {
         guard let name = txtItem.text, let quanity = txtQuantity.text, let unitPrice = txtUnitPrice.text, let stateTxt = txtState.text, let state = TaxFactory.getStateByName(name: stateTxt) else {
             return
@@ -64,6 +67,7 @@ class ViewController: UIViewController {
         self.view.endEditing(true)
     }
     
+    //MARK: Utility Methods
     private func resetTxtFlds() {
         txtItem.text = ""
         txtQuantity.text = ""
@@ -87,8 +91,9 @@ class ViewController: UIViewController {
     }
 }
 
+//MARK: UITableViewDelegate and UITableViewDataSource
+
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let items = itemViewModel.getItems() {
           return items.count
@@ -119,6 +124,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+//MARK: UITextFieldDelegate
 extension ViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -143,16 +149,27 @@ extension ViewController: UITextFieldDelegate {
     }
 }
 
+//MARK: ItemCellDelegate
 extension ViewController: ItemCellDelegate {
     func didTapRemove(sender: ItemCell, item: Item) {
         if let indexPath = tableView.indexPath(for: sender) {
-            itemViewModel.removeItemAtIndex(index: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-            reloadFooter()
+            do {
+                try itemViewModel.removeItemAtIndex(index: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                reloadFooter()
+            }
+            catch ItemError.parseError(let message) {
+                showAlert(message: message)
+            }
+            catch {
+                showAlert(message: "Something went wrong")
+            }
+
         }
     }
 }
 
+//MARK: StateSelectionDelegate
 extension ViewController: StateSelectionDelegate {
     func didSelectState(sender: StateSelectionViewController, state: State) {
         txtState.text = state.name
